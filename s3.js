@@ -42,7 +42,7 @@ let s3Utils     =   {
     })
     s3Stream = require('s3-upload-stream')(new AWS.S3())
   },
-  putToBucket : function (assetUri, folderName) {
+  putToBucket : function (assetUri, folderName, contentType) {
     Logger.info('Put to AWS : ', assetUri)
 
     let putP = new Promise((resolve,reject) => {
@@ -54,7 +54,8 @@ let s3Utils     =   {
 
       let upload      =   s3Stream.upload({
         'Bucket': process.env.S3_BUCKET_NAME,
-        'Key': keyPath
+        'Key': keyPath,
+        'ContentType' : contentType
       })
 
       // Additional configuration
@@ -93,7 +94,8 @@ let s3Utils     =   {
       getUri(assetUri, function (err, rs) {
         if (err) reject('Error getting asset stream ', err)
         // Pipe the incoming filestream through compression, and up to S3.
-        rs.pipe(upload)
+        if (rs && rs.pipe) rs.pipe(upload)
+        else reject('RS pipe issue')
       })
     })
 

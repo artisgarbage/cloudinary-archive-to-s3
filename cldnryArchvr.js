@@ -156,6 +156,10 @@ let cldnryArchvr = {
   },
   archiveAssetById : function(resourceObj) {
     Logger.info('----- Archive Cloudinary Asset -----')
+    const typeMap = {
+      image : 'image/jpeg',
+      video : 'video/mp4'
+    }
     let archiveP = new Promise((resolve,reject) => {
       if (!resourceObj) {
         reject('! A Cloudinary object with a  pblic_id key is required for archiving')
@@ -165,7 +169,13 @@ let cldnryArchvr = {
           '\nArchive Asset URL : ', resourceObj.url,
           '\nAsset Created At : ', resourceObj.created_at)
 
-        s3Utils.putToBucket(resourceObj.url, this.uploadPath)
+        Logger.info('Resouce Type : ', resourceObj.resource_type)
+
+        let contentType = (typeMap[resourceObj.resource_type]) || 'video/mp4'
+
+        Logger.info('Content Type : ', contentType)
+
+        s3Utils.putToBucket(resourceObj.url, this.uploadPath, contentType)
           .bind(this)
           .then(() => {
             // Delete from Cloudinary, but don't reject promise if errors on Cloudinary delete
