@@ -1,9 +1,8 @@
 const argv      =   require('yargs').argv,
     config      =   require('dotenv').config(),
     cloudinary  =   require('cloudinary'),
-    Promise     =   require('bluebird')
-
-let s3Utils     =   require('./s3')
+    Promise     =   require('bluebird'),
+    s3Utils     =   require('./s3')
 
 
 

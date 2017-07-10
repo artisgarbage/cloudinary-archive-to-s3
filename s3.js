@@ -6,10 +6,10 @@ const AWS       =   require('aws-sdk'),
     Promise     =   require('bluebird'),
     debug       =   false
 
+
+
 let s3Stream    =   {}
-
-
-let s3Utils = {
+let s3Utils     =   {
   checkEnvReqs : function () {
     // Check Config for required key value pairs
     if (!process.env.AWS_ACCESS_KEY) {
