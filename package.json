@@ -2,7 +2,8 @@
   "name": "cloudinary-delete-utils",
   "version": "1.0.0",
   "description": "NPM CLI for deleting cloudinary assets",
-  "main": "index.js",
+  "main": "cldnryArchvr.js",
+  "repository": "https://github.com/artisgarbage/cloudinary-archive-to-s3.git",
   "scripts": {
     "test": "npm run test"
   },
