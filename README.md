@@ -7,8 +7,6 @@ Utility for archiving Cloudinary assets to S3
 <!-- MarkdownTOC -->
 
 - Installation / Setup
-- Goals
-  - Roadmap
 - Usage
   - CLI
   - Node Module
@@ -42,24 +40,6 @@ Utility for archiving Cloudinary assets to S3
   BACKUP_FOLDERNAME_USE_TIME=true
   BACKUP_FOLDERNAME_PREFIX=backup
   ```
-
-# Goals
-
-- Become a public NPM package for archiving Cloudinary assets to AWS (S3 or Glacier)
-- Be usable as a CLI or as a package in code
-- Write good logs so that assets can be restored to Cloudinary if necessary
-- Provide an example file
-- Be well documented
-- Be well covered from a testing perspective
-- Works well on Node 6+
-
-
-## Roadmap
-
-- Basic functionality
-- Documentation
-- Test coverage
-- Two way communication
 
 
 
@@ -97,7 +77,7 @@ cldnryArchvr
 
 ### Main Public Methods
 ```javascript
-cldnryArchvr.archiveAssets(start_at, max_results)
+cldnryArchvr.archiveAssets(start_at, max_results) // Returns a Bluebird promise
 archiver.archiveAsset(cldnry_asset_id)
 //...and more...
 ```
@@ -107,9 +87,9 @@ See [Parameters](#parameters)
 ```javascript
 const archiver = require('./cldnryArchvr')
 
-const start_at          =   "May 1, 2017 00:00:00",
-      max_results       =   3,
-      cldnry_asset_id   =   EvBMTydMswybJ3ve2IpbmZUqXyeoqxt8W3en4Y
+const start_at          =   'May 1, 2017 00:00:00'
+const max_results       =   3
+const cldnry_asset_id   =   EvBMTydMswybJ3ve2IpbmZUqXyeoqxt8W3en4Y
 
 // Archive {max_results} many items older than {start_at}
 archiver.archiveAssets(start_at, max_results)
