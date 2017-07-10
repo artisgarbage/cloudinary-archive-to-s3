@@ -17,23 +17,23 @@ let cldnryArchvr = {
   checkEnvReqs : function() {
     // Check Config for required key value pairs
     if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      console.error('! CLOUDINARY_CLOUD_NAME required as environmental variable')
+      Logger.error('! CLOUDINARY_CLOUD_NAME required as environmental variable')
       return false
     }
     else if (!process.env.CLOUDINARY_API_KEY) {
-      console.error('! CLOUDINARY_API_KEY required as environmental variable')
+      Logger.error('! CLOUDINARY_API_KEY required as environmental variable')
       return false
     }
     else if (!process.env.CLOUDINARY_API_SECRET) {
-      console.error('! CLOUDINARY_API_SECRET required as environmental variable')
+      Logger.error('! CLOUDINARY_API_SECRET required as environmental variable')
       return false
     }
     else if (!process.env.AWS_ACCESS_KEY) {
-      console.error('! AWS_ACCESS_KEY required as environmental variable')
+      Logger.error('! AWS_ACCESS_KEY required as environmental variable')
       return false
     }
     else if (!process.env.AWS_ACCESS_KEY) {
-      console.error('! AWS_ACCESS_KEY required as environmental variable')
+      Logger.error('! AWS_ACCESS_KEY required as environmental variable')
       return false
     }
     else return true
@@ -41,11 +41,11 @@ let cldnryArchvr = {
   checkParamReqs : function(start_at, max_results) {
     // Check for required arguments
     if (!argv.start_at && !start_at) {
-      console.error('! start_at argument required to archive assets')
+      Logger.error('! start_at argument required to archive assets')
       return false
     }
     else if (!argv.max_results && !max_results) {
-      console.error('! max_results argument required to archive assets')
+      Logger.error('! max_results argument required to archive assets')
       return false
     }
     else {
@@ -54,7 +54,7 @@ let cldnryArchvr = {
       this.maxResults = (argv.max_results) || max_results
       // Check out-of-bounds max_results
       if (this.maxResults < 0 || this.maxResults > 500) {
-        console.error('! max_results must be between 0 and 500')
+        Logger.error('! max_results must be between 0 and 500')
         return false
       }
       else return true
@@ -115,7 +115,7 @@ let cldnryArchvr = {
             resolve()
           })
           .catch(err => {
-            console.error('! Errored archiving single asset', err)
+            Logger.error('! Errored archiving single asset', err)
             reject('! Errored archiving single asset', err)
           })
       }
@@ -128,11 +128,11 @@ let cldnryArchvr = {
             resolve()
           })
           .catch(err => {
-            console.error('! Errored archiving assets', err)
+            Logger.error('! Errored archiving assets', err)
             reject('! Errored archiving assets', err)
           })
       } else {
-        console.error('! Configuration requirements NOT satisfied')
+        Logger.error('! Configuration requirements NOT satisfied')
       }
     })
     return mainArchiveP
@@ -148,7 +148,7 @@ let cldnryArchvr = {
             resolve()
           })
           .catch(err => {
-            console.error('! Errored archiving single asset', err)
+            Logger.error('! Errored archiving single asset', err)
             reject('! Errored archiving single asset', err)
           })
     })
@@ -172,7 +172,7 @@ let cldnryArchvr = {
             this.deleteFromCloudinary(resourceObj.public_id)
               .then(resolve)
               .catch(err => {
-                console.error('! Error deleting asset from Cloudinary')
+                Logger.error('! Error deleting asset from Cloudinary')
               })
           })
           .catch(err => {

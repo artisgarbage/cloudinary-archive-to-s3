@@ -14,23 +14,23 @@ let s3Utils     =   {
   checkEnvReqs : function () {
     // Check Config for required key value pairs
     if (!process.env.AWS_ACCESS_KEY) {
-      console.error('! AWS_ACCESS_KEY required as environmental variable')
+      Logger.error('! AWS_ACCESS_KEY required as environmental variable')
       return false
     }
     else if (!process.env.AWS_SECRET_KEY) {
-      console.error('! AWS_SECRET_KEY required as environmental variable')
+      Logger.error('! AWS_SECRET_KEY required as environmental variable')
       return false
     }
     else if (!process.env.S3_BUCKET_NAME) {
-      console.error('! S3_BUCKET_NAME required as environmental variable')
+      Logger.error('! S3_BUCKET_NAME required as environmental variable')
       return false
     }
     else if (!process.env.AWS_MAX_PART_SIZE) {
-      console.error('! AWS_MAX_PART_SIZE required as environmental variable')
+      Logger.error('! AWS_MAX_PART_SIZE required as environmental variable')
       return false
     }
     else if (!process.env.AWS_MAX_CONCURRENT_PARTS) {
-      console.error('! AWS_MAX_CONCURRENT_PARTS required as environmental variable')
+      Logger.error('! AWS_MAX_CONCURRENT_PARTS required as environmental variable')
       return false
     }
     else return true
@@ -63,7 +63,7 @@ let s3Utils     =   {
 
       // Handle Errors
       upload.on('error', function (err) {
-        console.error('! S3 Upload Error : ', err)
+        Logger.error('! S3 Upload Error : ', err)
         reject(err)
       })
 
@@ -91,7 +91,7 @@ let s3Utils     =   {
       })
 
       getUri(assetUri, function (err, rs) {
-        if (err) throw err
+        if (err) reject('Error getting asset stream ', err)
         // Pipe the incoming filestream through compression, and up to S3.
         rs.pipe(upload)
       })
