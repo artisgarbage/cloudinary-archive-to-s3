@@ -56,7 +56,6 @@ OR
 (as an aliasable CLI utility, just add to your PATH)
 
 OR
-FUTURE
 ```./archiver --asset_id="QwmWBRIGrNFt499yUCqH1Z7O6xOIlbU8oM"```
 
 ### Parameters
@@ -78,7 +77,7 @@ cldnryArchvr
 ### Main Public Methods
 ```javascript
 cldnryArchvr.archiveAssets(start_at, max_results) // Returns a Bluebird promise
-archiver.archiveAsset(cldnry_asset_id)
+archiver.archiveAsset(cldnry_asset_id) // Returns a Bluebird promise
 //...and more...
 ```
 See [Parameters](#parameters)
@@ -89,12 +88,13 @@ const archiver = require('./cldnryArchvr')
 
 const start_at          =   'May 1, 2017 00:00:00'
 const max_results       =   3
-const cldnry_asset_id   =   EvBMTydMswybJ3ve2IpbmZUqXyeoqxt8W3en4Y
+const cldnry_asset_id   =   gnzavtkcudeftl8mwajp
 
 // Archive {max_results} many items older than {start_at}
 archiver.archiveAssets(start_at, max_results)
 
-// FUTURE
+
 // Archive a specific asset by Cloudinary ID
-archiver.archiveAsset(cldnry_asset_id)
+archiver.archiveSpecific(cldnry_asset_id)
+
 ```

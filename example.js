@@ -9,3 +9,12 @@ archiver.archiveAssets(start_at, max_results)
   }).catch((err) => {
     console.log('Oops, something went wrong', err)
   })
+
+
+/*let public_id = 'gnzavtkcudeftl8mwajp'
+archiver.archiveSpecific(public_id)
+  .then(() => {
+    console.log('Hoorah, archived the one asset!')
+  }).catch((err) => {
+    console.log('Oops, something went wrong while archiving the single asset', err)
+  })*/

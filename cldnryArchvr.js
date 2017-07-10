@@ -82,7 +82,21 @@ let cldnryArchvr = {
   },
   archiveAssets : function (start_at, max_results) {
     let mainArchiveP = new Promise((resolve, reject) => {
-      if (this.checkEnvReqs() && this.checkParamReqs(start_at, max_results)) {
+      if (argv.asset_id) {
+        console.log('Archive Asset with ID : ', argv.asset_id)
+        this.getCloudinaryObjById(argv.asset_id)
+          .bind(this)
+          .then(this.archiveEntireAssetsList)
+          .then((res) => {
+            console.log('*** Successfully archived single asset ***')
+            resolve()
+          })
+          .catch(err => {
+            console.error('! Errored archiving single asset', err)
+            reject('! Errored archiving single asset', err)
+          })
+      }
+      else if (this.checkEnvReqs() && this.checkParamReqs(start_at, max_results)) {
         this.listAssetsFromCloudinary()
           .bind(this)
           .then(this.archiveEntireAssetsList)
@@ -100,24 +114,39 @@ let cldnryArchvr = {
     })
     return mainArchiveP
   },
-  archiveAssetById : function(resourceObj, resourceId) {
+  archiveSpecific : function(publicId) {
+    let archiveP = new Promise((resolve, reject) => {
+      console.log('Archive Specific Asset with ID : ', publicId)
+        this.getCloudinaryObjById(publicId)
+          .bind(this)
+          .then(this.archiveEntireAssetsList)
+          .then((res) => {
+            console.log('*** Successfully archived single asset ***')
+            resolve()
+          })
+          .catch(err => {
+            console.error('! Errored archiving single asset', err)
+            reject('! Errored archiving single asset', err)
+          })
+    })
+    return archiveP
+  },
+  archiveAssetById : function(resourceObj) {
     console.log('----- Archive Cloudinary Asset -----')
     let archiveP = new Promise((resolve,reject) => {
-      if (!resourceObj && resourceId) {
-        reject('! Either a resource object or resourceId is required for archiving')
+      if (!resourceObj) {
+        reject('! A Cloudinary object with a  pblic_id key is required for archiving')
       }
       else {
-        const targetId = (resourceId) || resourceObj.public_id,
-              resourceUrl = (resourceObj.url) || this.getCloudinaryUrlById(resourceId)
+        console.log('Archive Asset ID : ', resourceObj.public_id,
+          '\nArchive Asset URL : ', resourceObj.url,
+          '\nAsset Created At : ', resourceObj.created_at)
 
-        console.log('Archive Asset ID : ', targetId)
-        if (resourceObj.created_at) console.log('Asset Created At : ', resourceObj.created_at)
-
-        s3Utils.putToBucket(resourceUrl, this.uploadPath)
+        s3Utils.putToBucket(resourceObj.url, this.uploadPath)
           .bind(this)
           .then(() => {
             // Delete from Cloudinary, but don't reject promise if errors on Cloudinary delete
-            this.deleteFromCloudinary(targetId)
+            this.deleteFromCloudinary(resourceObj.public_id)
               .then(resolve)
               .catch(err => {
                 console.error('! Error deleting asset from Cloudinary')
@@ -144,8 +173,15 @@ let cldnryArchvr = {
     })
     return allArchivesP
   },
-  getCloudinaryUrlById : function (resourceId) {
-    console.log('Get Cloudinary Obj by ID', resourceId)
+  getCloudinaryObjById : function (resourceId) {
+    console.log('Get Cloudinary Obj by ID : ', resourceId)
+    let listP = new Promise((resolve, reject) => {
+      cloudinary.api.resources_by_ids(resourceId, (res, err) => {
+        if (err) reject()
+        resolve(res)
+      })
+    })
+    return listP
   },
   listAssetsFromCloudinary : function() {
     let listP = new Promise((resolve,reject) => {
