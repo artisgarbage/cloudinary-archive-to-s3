@@ -88,7 +88,7 @@ const archiver = require('./cldnryArchvr')
 
 const start_at          =   'May 1, 2017 00:00:00'
 const max_results       =   3
-const cldnry_asset_id   =   gnzavtkcudeftl8mwajp
+const cldnry_asset_id   =   'gnzavtkcudeftl8mwajp'
 
 // Archive {max_results} many items older than {start_at}
 archiver.archiveAssets(start_at, max_results)
