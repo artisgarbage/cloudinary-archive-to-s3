@@ -22,6 +22,7 @@ Utility for archiving Cloudinary assets to S3
 - Run `npm install` within the repo directory
 - Create an .env file in the root directory of the repo
   - Update with your Cloudinary and AWS info
+- Create a `./logs` directory within the repo for log output
   **Sample .env file**
   ```
   CLOUDINARY_CLOUD_NAME=O0iFNzd1D915wtuhFQOaCCOgGWYtL
@@ -39,6 +40,9 @@ Utility for archiving Cloudinary assets to S3
   BACKUP_TO_FOLDER=true
   BACKUP_FOLDERNAME_USE_TIME=true
   BACKUP_FOLDERNAME_PREFIX=backup
+
+  LOG_TO_FILE=true
+  LOG_TO_CONSOLE=true
   ```
 
 

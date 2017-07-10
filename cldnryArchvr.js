@@ -2,13 +2,17 @@ const argv      =   require('yargs').argv,
     config      =   require('dotenv').config(),
     cloudinary  =   require('cloudinary'),
     Promise     =   require('bluebird'),
-    s3Utils     =   require('./s3')
+    s3Utils     =   require('./s3'),
+    LogFile     =   require('./logFile')
+    Logger      =   require('./logger'),
+    winston     =   require('winston')
 
 
 
 let cldnryArchvr = {
   startAt : '',
   maxResults : 0,
+  timestamp: '',
   uploadPath : '',
   checkEnvReqs : function() {
     // Check Config for required key value pairs
@@ -56,16 +60,33 @@ let cldnryArchvr = {
       else return true
     }
   },
+  setupLogger : function () {
+    let logFilename = './logs/log-'+this.timestamp+'.log'
+    Logger.info('Log Filename : ', logFilename)
+    LogFile.setFile(logFilename)
+    Logger.configure({
+      level: 'verbose',
+      transports: [
+        new (winston.transports.Console)(),
+        new (winston.transports.File)({
+          name: 'info-logfile',
+          filename: LogFile.getFile()
+        })
+      ]
+    })
+    if (process.env.LOG_TO_FILE === 'false') Logger.remove(winston.transports.File)
+    if (process.env.LOG_TO_CONSOLE === 'false') Logger.remove(winston.transports.Console)
+  },
   setUploadPath : function () {
     let path = ''
     if (process.env.BACKUP_TO_FOLDER === 'true') {
       path = (process.env.BACKUP_FOLDERNAME_PREFIX) ? process.env.BACKUP_FOLDERNAME_PREFIX : 'bak'
       if (process.env.BACKUP_FOLDERNAME_USE_TIME === 'true') {
-        path = path + '-' + Date.now()
+        path = path + '-' + this.timestamp
       }
     }
     this.uploadPath = path
-    console.log('Upload Path : ', this.uploadPath)
+    Logger.info('Upload Path : ', this.uploadPath)
     return this.uploadPath
   },
   setCloudinaryConfig : function() {
@@ -77,18 +98,20 @@ let cldnryArchvr = {
     return true
   },
   init : function() {
+    this.timestamp = Date.now()
+    this.setupLogger()
     this.setCloudinaryConfig()
     this.setUploadPath()
   },
   archiveAssets : function (start_at, max_results) {
     let mainArchiveP = new Promise((resolve, reject) => {
       if (argv.asset_id) {
-        console.log('Archive Asset with ID : ', argv.asset_id)
+        Logger.info('Archive Asset with ID : ', argv.asset_id)
         this.getCloudinaryObjById(argv.asset_id)
           .bind(this)
           .then(this.archiveEntireAssetsList)
           .then((res) => {
-            console.log('*** Successfully archived single asset ***')
+            Logger.info('*** Successfully archived single asset ***')
             resolve()
           })
           .catch(err => {
@@ -101,7 +124,7 @@ let cldnryArchvr = {
           .bind(this)
           .then(this.archiveEntireAssetsList)
           .then((res) => {
-            console.log('*** Successfully archived all assets ***')
+            Logger.info('*** Successfully archived all assets ***')
             resolve()
           })
           .catch(err => {
@@ -116,12 +139,12 @@ let cldnryArchvr = {
   },
   archiveSpecific : function(publicId) {
     let archiveP = new Promise((resolve, reject) => {
-      console.log('Archive Specific Asset with ID : ', publicId)
+      Logger.info('Archive Specific Asset with ID : ', publicId)
         this.getCloudinaryObjById(publicId)
           .bind(this)
           .then(this.archiveEntireAssetsList)
           .then((res) => {
-            console.log('*** Successfully archived single asset ***')
+            Logger.info('*** Successfully archived single asset ***')
             resolve()
           })
           .catch(err => {
@@ -132,13 +155,13 @@ let cldnryArchvr = {
     return archiveP
   },
   archiveAssetById : function(resourceObj) {
-    console.log('----- Archive Cloudinary Asset -----')
+    Logger.info('----- Archive Cloudinary Asset -----')
     let archiveP = new Promise((resolve,reject) => {
       if (!resourceObj) {
         reject('! A Cloudinary object with a  pblic_id key is required for archiving')
       }
       else {
-        console.log('Archive Asset ID : ', resourceObj.public_id,
+        Logger.info('Archive Asset ID : ', resourceObj.public_id,
           '\nArchive Asset URL : ', resourceObj.url,
           '\nAsset Created At : ', resourceObj.created_at)
 
@@ -174,7 +197,7 @@ let cldnryArchvr = {
     return allArchivesP
   },
   getCloudinaryObjById : function (resourceId) {
-    console.log('Get Cloudinary Obj by ID : ', resourceId)
+    Logger.info('Get Cloudinary Obj by ID : ', resourceId)
     let listP = new Promise((resolve, reject) => {
       cloudinary.api.resources_by_ids(resourceId, (res, err) => {
         if (err) reject()
@@ -185,9 +208,9 @@ let cldnryArchvr = {
   },
   listAssetsFromCloudinary : function() {
     let listP = new Promise((resolve,reject) => {
-      console.log(this.startAt, this.maxResults)
+      Logger.info(this.startAt, this.maxResults)
       cloudinary.api.resources((res) => {
-        console.log('Rate limit allowed : ', res.rate_limit_allowed,
+        Logger.info('Rate limit allowed : ', res.rate_limit_allowed,
           '\nRate limit remaining requests :', res.rate_limit_remaining,
           '\nRate limit resets at : ', res.rate_limit_reset_at)
         resolve(res)
@@ -200,30 +223,27 @@ let cldnryArchvr = {
     return listP
   },
   getFromCoundinary : function () {
-    console.log('Get single asset from Cloudinary')
+    Logger.info('Get single asset from Cloudinary')
   },
   deleteFromCloudinary : function(assetId) {
     let delP = new Promise((resolve, reject) => {
       if (process.env.CLOUDINARY_DELETE === 'true') {
-        console.log('Delete Cloudinary Asset : ', assetId)
+        Logger.info('Delete Cloudinary Asset : ', assetId)
         cloudinary.api.delete_resources(assetId, (res, err) => {
           if (err) {
             reject()
           } else {
-            console.log('Cloudinary Deleted : ', res.deleted)
+            Logger.info('Cloudinary Deleted : ', res.deleted)
             resolve()
           }
         })
       }
       else {
-        console.log('Opted out of Cloudinary delete...')
+        Logger.info('Opted out of Cloudinary delete...')
         resolve()
       }
     })
     return delP
-  },
-  writeLog : function () {
-    console.log('Write to log')
   }
 }
 

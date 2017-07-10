@@ -4,6 +4,7 @@ const AWS       =   require('aws-sdk'),
     fs          =   require('fs'),
     getUri      =   require('get-uri'),
     Promise     =   require('bluebird'),
+    Logger      =   require('./logger'),
     debug       =   false
 
 
@@ -42,14 +43,14 @@ let s3Utils     =   {
     s3Stream = require('s3-upload-stream')(new AWS.S3())
   },
   putToBucket : function (assetUri, folderName) {
-    console.log('Put to AWS : ', assetUri)
+    Logger.info('Put to AWS : ', assetUri)
 
     let putP = new Promise((resolve,reject) => {
 
       const filename = assetUri.substring(assetUri.lastIndexOf('/')+1),
             keyPath = (folderName) ? folderName + '/' + filename : filename
 
-      console.log('Upload with Keypath : ', keyPath)
+      Logger.info('Upload with Keypath : ', keyPath)
 
       let upload      =   s3Stream.upload({
         'Bucket': process.env.S3_BUCKET_NAME,
@@ -73,7 +74,7 @@ let s3Utils     =   {
            uploadedSize: 29671068 }
       */
       upload.on('part', function (details) {
-        if (debug) console.log('Part Info : ', details)
+        if (debug) Logger.info('Part Info : ', details)
       })
 
       /* Handle upload completion. Example details object:
@@ -83,7 +84,7 @@ let s3Utils     =   {
            ETag: ''bf2acbedf84207d696c8da7dbb205b9f-5'' }
       */
       upload.on('uploaded', function (details) {
-        console.log('----- S3 Upload Success -----',
+        Logger.info('----- S3 Upload Success -----',
           '\n', details,
           '\n----- end : s3 upload info -----')
         resolve(details)

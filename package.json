@@ -20,6 +20,7 @@
     "dotenv": "^4.0.0",
     "get-uri": "^2.0.0",
     "s3-upload-stream": "^1.0.7",
+    "winston": "^2.3.1",
     "yargs": "^8.0.2"
   }
 }
