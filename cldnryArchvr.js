@@ -172,7 +172,6 @@ let cldnryArchvr = {
     let delP = new Promise((resolve, reject) => {
       if (process.env.CLOUDINARY_DELETE === 'true') {
         console.log('Delete Cloudinary Asset : ', assetId)
-
         cloudinary.api.delete_resources(assetId, (res, err) => {
           if (err) {
             reject()
@@ -181,7 +180,6 @@ let cldnryArchvr = {
             resolve()
           }
         })
-
       }
       else {
         console.log('Opted out of Cloudinary delete...')
